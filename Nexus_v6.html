@@ -2335,7 +2335,14 @@ Schema:
         }
 
         function meshStartSync() {
-            const serverUrl = document.getElementById('mesh-server-url').value.trim();
+            let serverUrl = document.getElementById('mesh-server-url').value.trim();
+            
+            // Auto-detect WSS for hosted environments
+            if (serverUrl === 'ws://localhost:8080' && window.location.protocol === 'https:') {
+                serverUrl = window.location.origin.replace(/^http/, 'ws');
+                document.getElementById('mesh-server-url').value = serverUrl;
+            }
+
             const roomId = document.getElementById('mesh-room-input').value.trim().toUpperCase();
             const pin = document.getElementById('mesh-pin-input').value.trim();
 
