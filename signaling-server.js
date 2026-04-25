@@ -6,14 +6,28 @@ const PORT = process.env.PORT || 8080;
 const rooms = new Map(); // Map<roomId, { peers: Set<ws>, pin: string }>
 const ipRegistry = new Map(); // Rate limiting: Map<ip, lastJoinTime>
 
+const fs = require('fs');
+const path = require('path');
+
 const server = http.createServer((req, res) => {
-    // Basic HTTP endpoint for room creation / status
     if (req.url === '/health') {
         res.writeHead(200);
         res.end('OK');
+    } else if (req.url === '/' || req.url === '/index.html') {
+        // Serve the main IDE file
+        const filePath = path.join(__dirname, 'Nexus_v6.html');
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                res.writeHead(500);
+                res.end('Error loading Nexus_v6.html');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.end(data);
+            }
+        });
     } else {
         res.writeHead(404);
-        res.end();
+        res.end('Not Found');
     }
 });
 
